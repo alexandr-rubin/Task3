@@ -9,20 +9,14 @@ namespace task3
     {
         static void Main(string[] args)
         {
-            string str = Console.ReadLine();
-            if (str.Split(' ').Length < 3 || str.Split(' ').Length % 2 == 0)
+            if (args.Length < 3 || args.Length % 2 == 0)
             {
                 Console.WriteLine("Enter an odd number of words separated by a space. Words must be at least 3.");
                 return;
             }
-            List<string> listOfMoves = new List<string>();
-            foreach (var item in str.Split(' '))
+            foreach (var item in args)
             {
-                if (!listOfMoves.ConvertAll(l => l.ToUpper()).Contains(item.ToUpper()))
-                {
-                    listOfMoves.Add(item);
-                }
-                else
+                if (args.ToString().ToUpper().Contains(item.ToUpper()))
                 {
                     Console.WriteLine("You cannot enter duplicate words.");
                     return;
@@ -30,15 +24,15 @@ namespace task3
             }
             var key = new byte[16];
             RandomNumberGenerator.Create().GetBytes(key);
-            int compMove = RandomNumberGenerator.GetInt32(1, listOfMoves.Count + 1);
-            Console.WriteLine($"HMAC: {Encode(listOfMoves[compMove - 1], key)}");
+            int compMove = RandomNumberGenerator.GetInt32(1, args.Length + 1);
+            Console.WriteLine($"HMAC: {Encode(args[compMove - 1], key)}");
             int move;
             while (true)
             {
                 Console.WriteLine("Available moves:");
-                foreach (var item in listOfMoves)
+                foreach (var item in args)
                 {
-                    Console.WriteLine($"{listOfMoves.IndexOf(item) + 1} - {item}");
+                    Console.WriteLine($"{Array.IndexOf(args, item) + 1} - {item}");
                 }
                 Console.WriteLine("0 - exit");
                 Console.Write("Enter your move: ");
@@ -47,9 +41,9 @@ namespace task3
                     continue;
                 if (move == 0)
                     return;
-                if (result && move >= 0 && move <= listOfMoves.Count)
+                if (result && move >= 0 && move <= args.Length)
                 {
-                    Console.WriteLine($"Your move: {listOfMoves[move - 1]}");
+                    Console.WriteLine($"Your move: {args[move - 1]}");
                     break;
                 }
                 else
@@ -57,8 +51,8 @@ namespace task3
                     Console.WriteLine("Invalid input. Enter a number from the proposed.");
                 }
             }
-            Console.WriteLine($"Computer move: {listOfMoves[compMove - 1]}");
-            WinnerDetermination(move, compMove, listOfMoves);
+            Console.WriteLine($"Computer move: {args[compMove - 1]}");
+            WinnerDetermination(move, compMove, args);
             Console.Write("HMAC key: ");
             foreach (var item in key)
             {
@@ -66,20 +60,20 @@ namespace task3
             }
         }
 
-        public static void WinnerDetermination(int move, int compMove, List<string> list)
+        public static void WinnerDetermination(int move, int compMove, string[] arr)
         {
             if (move == compMove)
             {
                 Console.WriteLine("Draw!");
                 return;
             }
-            for (int i = 0; i < list.Count / 2; i++)
+            for (int i = 0; i < arr.Length / 2; i++)
             {
-                if (move == list.Count)
+                if (move == arr.Length)
                 {
                     move = 0;
                 }
-                if (list[compMove - 1] == list[move])
+                if (arr[compMove - 1] == arr[move])
                 {
                     Console.WriteLine("You lose!");
                     return;
